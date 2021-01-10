@@ -23,7 +23,7 @@ func FastSearch(out io.Writer) {
 
 	scanner := bufio.NewScanner(file)
 	i := 0
-	user := make(map[string]interface{})
+	var user User
 	for scanner.Scan() {
 		i++
 		err = json.Unmarshal(scanner.Bytes(), &user)
@@ -32,9 +32,8 @@ func FastSearch(out io.Writer) {
 		}
 
 		var isAndroid, isMSIE bool
-		browsers := user["browsers"].([]interface{})
-		for _, browserRaw := range browsers {
-			browser := browserRaw.(string)
+		browsers := user.Browsers
+		for _, browser := range browsers {
 			if strings.Contains(browser, "Android") {
 				isAndroid = true
 				seenBrowsers[browser] = struct{}{}
@@ -49,8 +48,8 @@ func FastSearch(out io.Writer) {
 		}
 
 		//log.Println("Android and MSIE user:", user["name"], user["email"])
-		email := strings.ReplaceAll(user["email"].(string), "@", " [at] ")
-		foundUsers += fmt.Sprintf("[%d] %s <%s>\n", i-1, user["name"], email)
+		email := strings.ReplaceAll(user.Email, "@", " [at] ")
+		foundUsers += fmt.Sprintf("[%d] %s <%s>\n", i-1, user.Name, email)
 	}
 	if err = scanner.Err(); err != nil {
 		log.Fatal(err)
@@ -58,4 +57,10 @@ func FastSearch(out io.Writer) {
 
 	fmt.Fprintln(out, "found users:\n"+foundUsers)
 	fmt.Fprintln(out, "Total unique browsers", len(seenBrowsers))
+}
+
+type User struct {
+	Browsers []string `json:"browsers"`
+	Name     string   `json:"name"`
+	Email    string   `json:"email"`
 }
