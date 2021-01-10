@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
+	"hw3_bench/data"
 	"io"
 	"log"
 	"os"
@@ -23,10 +23,10 @@ func FastSearch(out io.Writer) {
 
 	scanner := bufio.NewScanner(file)
 	i := 0
-	var user User
+	user := &data.User{}
 	for scanner.Scan() {
 		i++
-		err = json.Unmarshal(scanner.Bytes(), &user)
+		err = user.UnmarshalJSON(scanner.Bytes())
 		if err != nil {
 			panic(err)
 		}
@@ -57,10 +57,4 @@ func FastSearch(out io.Writer) {
 
 	fmt.Fprintln(out, "found users:\n"+foundUsers)
 	fmt.Fprintln(out, "Total unique browsers", len(seenBrowsers))
-}
-
-type User struct {
-	Browsers []string `json:"browsers"`
-	Name     string   `json:"name"`
-	Email    string   `json:"email"`
 }
