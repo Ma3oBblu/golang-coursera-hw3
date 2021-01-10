@@ -25,8 +25,8 @@ func FastSearch(out io.Writer) {
 
 	scanner := bufio.NewScanner(file)
 	i := 0
+	user := make(map[string]interface{})
 	for scanner.Scan() {
-		user := make(map[string]interface{})
 		// fmt.Printf("%v %v\n", err, line)
 		err := json.Unmarshal(scanner.Bytes(), &user)
 		if err != nil {
