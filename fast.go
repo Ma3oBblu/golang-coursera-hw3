@@ -97,7 +97,7 @@ func FastSearch(out io.Writer) {
 		}
 
 		//log.Println("Android and MSIE user:", user["name"], user["email"])
-		email := strings.Replace(user["email"].(string), "@", " [at] ", -1)
+		email := strings.ReplaceAll(user["email"].(string), "@", " [at] ")
 		foundUsers += fmt.Sprintf("[%d] %s <%s>\n", i, user["name"], email)
 	}
 
