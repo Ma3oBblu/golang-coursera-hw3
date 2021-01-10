@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 )
@@ -15,27 +16,25 @@ func FastSearch(out io.Writer) {
 	if err != nil {
 		panic(err)
 	}
-
-	fileContents, err := ioutil.ReadAll(file)
-	if err != nil {
-		panic(err)
-	}
+	defer file.Close()
 
 	var seenBrowsers []string
 	var uniqueBrowsers int
 	var foundUsers string
-
-	lines := strings.Split(string(fileContents), "\n")
-
 	users := make([]map[string]interface{}, 0)
-	for _, line := range lines {
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
 		user := make(map[string]interface{})
 		// fmt.Printf("%v %v\n", err, line)
-		err := json.Unmarshal([]byte(line), &user)
+		err := json.Unmarshal(scanner.Bytes(), &user)
 		if err != nil {
 			panic(err)
 		}
 		users = append(users, user)
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
 	}
 
 	for i, user := range users {
