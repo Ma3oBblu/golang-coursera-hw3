@@ -21,9 +21,10 @@ func FastSearch(out io.Writer) {
 	var seenBrowsers []string
 	var uniqueBrowsers int
 	var foundUsers string
-	users := make([]map[string]interface{}, 0)
+	//users := make([]map[string]interface{}, 0)
 
 	scanner := bufio.NewScanner(file)
+	i := 0
 	for scanner.Scan() {
 		user := make(map[string]interface{})
 		// fmt.Printf("%v %v\n", err, line)
@@ -31,13 +32,9 @@ func FastSearch(out io.Writer) {
 		if err != nil {
 			panic(err)
 		}
-		users = append(users, user)
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
 
-	for i, user := range users {
+		i++
+
 		isAndroid := false
 		isMSIE := false
 
@@ -97,7 +94,10 @@ func FastSearch(out io.Writer) {
 
 		//log.Println("Android and MSIE user:", user["name"], user["email"])
 		email := strings.ReplaceAll(user["email"].(string), "@", " [at] ")
-		foundUsers += fmt.Sprintf("[%d] %s <%s>\n", i, user["name"], email)
+		foundUsers += fmt.Sprintf("[%d] %s <%s>\n", i-1, user["name"], email)
+	}
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
 	}
 
 	fmt.Fprintln(out, "found users:\n"+foundUsers)
